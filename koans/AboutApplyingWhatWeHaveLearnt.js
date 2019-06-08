@@ -30,15 +30,34 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(productsICanEat.length).toBe(FILL_ME_IN);
+    expect(productsICanEat.length).toBe(1);
   });
 
   it("given I'm allergic to nuts and hate mushrooms, it should find a pizza I can eat (functional)", function () {
-      var productsICanEat = [];
+      var productsICanEat = _(products).filter(function(product){
+        if (_(product.ingredients).any(function(ingredient){
+          return ingredient === "mushrooms";
+        })){
+          return false;
+        }
+        if (product.containsNuts){
+          return false;
+        }
+        return true;
+      })
 
-      /* solve using filter() & all() / any() */
+      expect(productsICanEat.length).toBe(1);
 
-      expect(productsICanEat.length).toBe(FILL_ME_IN);
+      // productsICanEat = products.filter(product => {
+      //   if (product.ingredients.includes('mushrooms')){
+      //     return false;
+      //   }
+      //   if (product.containsNuts){
+      //     return false;
+      //   }
+      //   return true;
+      // })
+      // console.log(productsICanEat)
   });
 
   /*********************************************************************************/
@@ -51,14 +70,22 @@ describe("About Applying What We Have Learnt", function() {
         sum += i;
       }
     }
-    
-    expect(sum).toBe(FILL_ME_IN);
+
+    expect(sum).toBe(233168);
   });
 
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (functional)", function () {
-    var sum = FILL_ME_IN;    /* try chaining range() and reduce() */
+      /* try chaining range() and reduce() */
 
-    expect(233168).toBe(FILL_ME_IN);
+    var sum = _(_.range(0, 1000)).chain().reduce(function(acc, index){
+      if (index % 5 === 0 || index % 3 === 0){
+        return acc + index;
+      }
+      return acc;
+    })
+    .value();
+
+    expect(233168).toBe(sum);
   });
 
   /*********************************************************************************/
@@ -71,39 +98,74 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   it("should count the ingredient occurrence (functional)", function () {
     var ingredientCount = { "{ingredient name}": 0 };
 
     /* chain() together map(), flatten() and reduce() */
+    _(products).chain()
+                .map(function(product){
+                  return product.ingredients;
+                })
+                .flatten()
+                .reduce(function(acc, cur){
+                  if (ingredientCount[cur]){
+                    ingredientCount[cur]++;
+                  } else{
+                    ingredientCount[cur] = 1;
+                  }
+                });
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   /*********************************************************************************/
   /* UNCOMMENT FOR EXTRA CREDIT */
-  /*
-  it("should find the largest prime factor of a composite number", function () {
   
-  });
+  it("should find the largest prime factor of a composite number", function () {
 
-  it("should find the largest palindrome made from the product of two 3 digit numbers", function () {
-    
-  });
+    function isPrime(testNum){
+      return _(_.range(2, Math.sqrt(testNum) + 1)).all(function(checkNum){
+        return testNum % checkNum !== 0;
+      })
+    }
 
-  it("should find the smallest number divisible by each of the numbers 1 to 20", function () {
+    function largestPrimeFactorOfComposite(num){
+      if (num === 1 || num === 0 || isPrime(num)){
+        return "not a composite number";
+      }
+      return _(_.range(3, Math.floor(num / 2 ) + 1)).reduce(function(highestPrime, cur){
+        if (num % cur === 0 && isPrime(cur)){
+          return highestPrime = cur;
       
-    
-  });
+        }
+        return highestPrime;
+      })
+    }
 
-  it("should find the difference between the sum of the squares and the square of the sums", function () {
-    
+    expect(largestPrimeFactorOfComposite(14)).toBe(7);
+    expect(largestPrimeFactorOfComposite(46)).toBe(23);
+    expect(largestPrimeFactorOfComposite(136)).toBe(17);
+    expect(largestPrimeFactorOfComposite(1)).toBe("not a composite number");
+    expect(largestPrimeFactorOfComposite(0)).toBe("not a composite number");
+    expect(largestPrimeFactorOfComposite(13)).toBe("not a composite number");
   });
-
-  it("should find the 10001st prime", function () {
-
-  });
-  */
 });
+
+  // it("should find the largest palindrome made from the product of two 3 digit numbers", function () {
+  // });
+
+  
+
+//   it("should find the difference between the sum of the squares and the square of the sums", function () {
+    
+//   });
+
+//   it("should find the 10001st prime", function () {
+
+//   });
+
+// })
